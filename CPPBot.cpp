@@ -1,3 +1,5 @@
+// CPPBot.cpp : This file contains the 'main' function. Program execution begins and ends there.
+
 #include <iostream>
 #include <fstream>
 #include <future>
@@ -5,68 +7,42 @@
 #include <chrono>
 #include "corefunc.h"
 #include "userfunc.h"
-#include "json.hpp"
 #include <string>
-#include <direct.h>
-#include <regex>
-#include "HTTPRequest.hpp"
-#include "proton/rtparam.hpp"
-#define GetCurrentDir _getcwd
+#include <unistd.h>
+#include <stdint.h>
+#include "json.hpp"
+//#include <curses.h>
+//#include <conio.h>
+//#include <windows.h>
 
-using namespace std;
 using json = nlohmann::json;
-
+using namespace std;
 vector<GrowtopiaBot> bots;
 
-GrowtopiaBot bot = { "", "", "", -1 };
+GrowtopiaBot bot1 = {"", "", "", -1};
 
-
-
-int main() {
-	SetConsoleTitleA("CidScript for PC by upy#5939");
-	init();
-
-	
-
-	string gid, gps, vr,em, ip;
-	int port;
-	system("cls");
-	cout << " Custom GrowID: " << endl;
-	getline(cin, gid);
-	cout << " Custom Password: " << endl;
-	getline(cin, gps);
-	cout << " Custom Game Version: " << endl;
-	getline(cin, vr);
-	cout << " Custom Gmail: " << endl;
-	getline(cin, em);
-
-	Growid_acc = gid;
-	Password_acc = gps;
-	gameVersion = vr;
-	Gmail_acc = em;
-
-	http::Request request{ "http://growtopia2.com/growtopia/server_data.php" };
-
-	const auto response = request.send("POST", "version=1&protocol=128", { "Content-Type: application/x-www-form-urlencoded" });
-
-	rtvar var = rtvar::parse({ response.body.begin(), response.body.end() });
-
-	var.serialize();
-	if (var.get("server") == "127.0.0.1") {
-		return false;
-	}
-	if (var.find("server")) {
-		bot.SERVER_HOST = var.get("server");
-		bot.SERVER_PORT = std::stoi(var.get("port"));
-	}
-
-	cout << "Parsing port and ip is done. port is " << to_string(bot.SERVER_PORT).c_str() << " and ip is " <<bot.SERVER_HOST << endl;
-
-
+GrowtopiaBot makeBot(string user, string pass, string host, int port, string vers, string wname) {
+	GrowtopiaBot bot = {user, pass, host, port};
+	bot.gameVersion = vers;
+	bot.currentWorld = wname;
 	bot.userInit();
 	bots.push_back(bot);
-
+	return bot;
+}
+void botSetup() {
+	ifstream i("config.json");
+	json j;
+	i >> j;
+	init();
+	system("clear");
+	string user1 = j["bot1"].get<string>(), pass1 = j["pass1"].get<string>();
+	string vers = j["gtversion"].get<string>();
+	string wn = j["home"].get<string>();
+	bot1 = makeBot(user1, pass1,"213.179.209.168", 17198, vers, wn);
 	while (true) {
-		bot.eventLoop();
+		bot1.eventLoop();
 	}
+}
+int main() {
+	botSetup();
 }
