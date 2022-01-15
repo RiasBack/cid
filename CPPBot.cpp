@@ -7,7 +7,6 @@
 #include "userfunc.h"
 #include "json.hpp"
 #include <string>
-#include <windows.h>
 #include <direct.h>
 #include <regex>
 #include "HTTPRequest.hpp"
